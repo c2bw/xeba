@@ -1,0 +1,30 @@
+services:
+  xeba:
+    image: ghcr.io/c2bw/xeba:latest
+    build: .
+    ports:
+      - "127.0.0.1:4000:4000"
+    environment:
+      PHX_SERVER: "true"
+      PHX_HOST: "${PHX_HOST:-localhost}"
+      PORT: "4000"
+      TZ: "${TZ:-Europe/Rome}"
+      SECRET_KEY_BASE: "${SECRET_KEY_BASE:?Set SECRET_KEY_BASE with `mix phx.gen.secret` before running docker compose}"
+      DATABASE_URL: "${DATABASE_URL:-}"
+      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-postgres}"
+      # Override in .env; DATABASE_URL takes precedence when non-empty.
+      POSTGRES_DB: "${POSTGRES_DB:-xeba_dev}"
+      POSTGRES_POOL_SIZE: "${POSTGRES_POOL_SIZE:-10}"
+      POSTGRES_HOST: "${POSTGRES_HOST:-postgres}"
+      POSTGRES_PORT: "${POSTGRES_PORT:-5432}"
+      EXIRON_BASE_URL: "${EXIRON_BASE_URL:?Set EXIRON_BASE_URL before running docker compose}"
+      EXIRON_HOOK_TOKEN: "${EXIRON_HOOK_TOKEN:?Set EXIRON_HOOK_TOKEN before running docker compose}"
+      EXIRON_CLIENT_ID: "${EXIRON_CLIENT_ID:-xeba}"
+      AI_ENDPOINT: "${AI_ENDPOINT:-}"
+      AI_API_KEY: "${AI_API_KEY:?Set AI_API_KEY before running docker compose}"
+      AI_MODEL: "${AI_MODEL:?Set AI_MODEL before running docker compose}"
+      TELEGRAM_BOT_NAME: "${TELEGRAM_BOT_NAME:?Set TELEGRAM_BOT_NAME before running docker compose}"
+      XEBA_AUTH_USERNAME: "${XEBA_AUTH_USERNAME:?Set XEBA_AUTH_USERNAME before running docker compose}"
+      XEBA_AUTH_PASSWORD: "${XEBA_AUTH_PASSWORD:?Set XEBA_AUTH_PASSWORD before running docker compose}"
+    restart: unless-stopped

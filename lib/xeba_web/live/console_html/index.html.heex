@@ -1,0 +1,689 @@
+<Layouts.app flash={@flash} current_scope={@current_scope}>
+  <div class="relative isolate overflow-hidden">
+    <header class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-3 pb-3 pt-5 sm:px-5 lg:px-6">
+      <div>
+        <div class="flex items-center gap-2">
+          <p class="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-emerald-300/70">
+            Operations
+          </p>
+          <span class="size-1 rounded-full bg-stone-700"></span>
+          <span class="inline-flex items-center gap-1.5 text-[0.65rem] text-stone-500">
+            <span class="size-1.5 animate-pulse rounded-full bg-emerald-400"></span> Live intake
+          </span>
+        </div>
+        <h1 class="mt-1 text-xl font-semibold tracking-tight text-white">Conversation console</h1>
+      </div>
+      <.link
+        id="autonomous-settings-link"
+        navigate={~p"/autonomous"}
+        class="inline-flex items-center gap-2 rounded-lg border border-cyan-300/15 bg-cyan-300/[0.05] px-2.5 py-1.5 text-xs font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-300/10"
+      >
+        <.icon name="hero-clock" class="size-3.5" /> Timer controls
+      </.link>
+    </header>
+
+    <section class="mx-auto max-w-7xl px-3 pb-10 sm:px-5 lg:px-6">
+      <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="group relative overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur transition hover:border-emerald-300/15 hover:bg-white/[0.05]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-wider text-stone-500">Exchanges</p>
+              <p
+                id="exchange-count"
+                class="mt-1 font-mono text-lg font-semibold leading-5 text-white"
+              >
+                {@exchange_count}
+              </p>
+            </div>
+            <span class="grid size-7 place-items-center rounded-lg bg-emerald-300/[0.07] text-emerald-300/70">
+              <.icon name="hero-arrows-right-left" class="size-3.5" />
+            </span>
+          </div>
+          <p class="mt-2 text-[0.65rem] text-stone-600">Current view</p>
+        </div>
+        <div class="group rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur transition hover:border-cyan-300/15 hover:bg-white/[0.05]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-wider text-stone-500">Context</p>
+              <p
+                id="context-window-summary"
+                class="mt-1 font-mono text-lg font-semibold leading-5 text-white"
+              >
+                {@context_window || 20}
+              </p>
+            </div>
+            <span class="grid size-7 place-items-center rounded-lg bg-cyan-300/[0.07] text-cyan-300/70">
+              <.icon name="hero-circle-stack" class="size-3.5" />
+            </span>
+          </div>
+          <p class="mt-2 text-[0.65rem] text-stone-600">Completed exchanges</p>
+        </div>
+        <div class="group rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur transition hover:border-violet-300/15 hover:bg-white/[0.05]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-wider text-stone-500">Used / min</p>
+              <p
+                id="token-usage-minute"
+                class="mt-1 font-mono text-lg font-semibold leading-5 text-white"
+              >
+                {format_quota(@token_usage.minute)}
+              </p>
+            </div>
+            <span class="grid size-7 place-items-center rounded-lg bg-violet-300/[0.07] text-violet-300/70">
+              <.icon name="hero-bolt" class="size-3.5" />
+            </span>
+          </div>
+          <p class="mt-2 text-[0.65rem] text-stone-600">Rolling 60 seconds</p>
+        </div>
+        <div class="group rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur transition hover:border-fuchsia-300/15 hover:bg-white/[0.05]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-wider text-stone-500">Used / hour</p>
+              <p
+                id="token-usage-hour"
+                class="mt-1 font-mono text-lg font-semibold leading-5 text-white"
+              >
+                {format_quota(@token_usage.hour)}
+              </p>
+            </div>
+            <span class="grid size-7 place-items-center rounded-lg bg-fuchsia-300/[0.07] text-fuchsia-300/70">
+              <.icon name="hero-clock" class="size-3.5" />
+            </span>
+          </div>
+          <p class="mt-2 text-[0.65rem] text-stone-600">Rolling 60 minutes</p>
+        </div>
+        <div class="group rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur transition hover:border-sky-300/15 hover:bg-white/[0.05]">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-[0.65rem] uppercase tracking-wider text-stone-500">Used / day</p>
+              <p
+                id="token-usage-day"
+                class="mt-1 font-mono text-lg font-semibold leading-5 text-white"
+              >
+                {format_quota(@token_usage.day)}
+              </p>
+            </div>
+            <span class="grid size-7 place-items-center rounded-lg bg-sky-300/[0.07] text-sky-300/70">
+              <.icon name="hero-chart-bar" class="size-3.5" />
+            </span>
+          </div>
+          <p class="mt-2 text-[0.65rem] text-stone-600">Rolling 24 hours</p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-3 backdrop-blur sm:col-span-2 lg:col-span-1">
+          <div class="flex items-center justify-between gap-3">
+            <p class="text-[0.65rem] uppercase tracking-wider text-stone-500">Gateway</p>
+            <span
+              id="gateway-status"
+              class={[
+                "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[0.65rem] font-medium",
+                gateway_status_classes(@gateway_status)
+              ]}
+            >
+              <span class={["size-1.5 rounded-full", gateway_dot_classes(@gateway_status)]}></span>
+              {gateway_status_label(@gateway_status)}
+            </span>
+          </div>
+          <div
+            id="exiron-connection-events"
+            class="mt-2 max-h-[3.625rem] space-y-1.5 overflow-y-auto pr-1"
+          >
+            <p
+              :if={@connection_events == []}
+              id="exiron-connection-events-empty"
+              class="text-xs font-medium leading-5 text-stone-400"
+            >
+              No connection events
+            </p>
+            <div
+              :for={event <- @connection_events}
+              id={"exiron-connection-event-#{event.id}"}
+              class="flex min-w-0 items-center gap-2 text-xs leading-4"
+            >
+              <span class={["size-1.5 shrink-0 rounded-full", connection_event_classes(event)]}></span>
+              <span class="shrink-0 font-medium text-stone-200">
+                {connection_event_label(event)}
+              </span>
+              <span class="truncate text-stone-500">{event.detail}</span>
+              <span class="ml-auto shrink-0 text-stone-500">{format_time(event.occurred_at)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <details
+        id="database-text-tools"
+        open={not is_nil(@replace_preview)}
+        class="group mt-3 rounded-xl border border-white/[0.08] bg-black/10 backdrop-blur transition open:bg-black/15"
+      >
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 [&::-webkit-details-marker]:hidden">
+          <div class="flex min-w-0 items-center gap-2.5">
+            <span class="grid size-7 shrink-0 place-items-center rounded-lg border border-amber-300/10 bg-amber-300/[0.05] text-amber-200/70">
+              <.icon name="hero-wrench-screwdriver" class="size-3.5" />
+            </span>
+            <div class="min-w-0">
+              <h2 class="text-xs font-semibold text-stone-300">Database text swap</h2>
+              <p class="truncate text-[0.65rem] text-stone-600">
+                Replace display names and conversation text
+              </p>
+            </div>
+          </div>
+          <.icon
+            name="hero-chevron-down"
+            class="details-chevron size-4 text-stone-600 transition-transform"
+          />
+        </summary>
+        <.form
+          for={@replace_form}
+          id="database-text-swap-form"
+          phx-change="validate_database_text"
+          phx-submit="preview_database_text"
+          class="grid gap-2 border-t border-white/[0.06] px-3 pb-3 pt-3 transition phx-submit-loading:opacity-70 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
+        >
+          <.input
+            field={@replace_form[:from]}
+            type="text"
+            label="Find"
+            placeholder="andrebot"
+            autocomplete="off"
+          />
+          <.input
+            field={@replace_form[:to]}
+            type="text"
+            label="Replace with"
+            placeholder="ilariabot"
+            autocomplete="off"
+          />
+          <button
+            id="database-text-swap-button"
+            type="submit"
+            phx-disable-with="Checking…"
+            class="inline-flex items-center justify-center gap-2 self-end rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-sm font-semibold text-emerald-100 transition hover:-translate-y-0.5 hover:bg-emerald-300/15 phx-submit-loading:cursor-wait"
+          >
+            <.icon name="hero-magnifying-glass" class="size-4" /> Preview
+          </button>
+        </.form>
+
+        <div
+          :if={@replace_preview}
+          id="database-text-swap-preview"
+          class="mx-3 mb-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.05] p-3"
+        >
+          <div class="flex items-start gap-3">
+            <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-amber-300/[0.08] text-amber-200">
+              <.icon name="hero-exclamation-triangle" class="size-4" />
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold text-amber-100">
+                {row_count_label(@replace_preview.affected_rows)} will change
+              </p>
+              <p class="mt-1 break-words text-xs leading-5 text-stone-400">
+                Replace every case-insensitive occurrence of
+                <code class="rounded bg-black/20 px-1.5 py-0.5 text-stone-200">{@replace_preview.from}</code>
+                with <code class="rounded bg-black/20 px-1.5 py-0.5 text-stone-200">{@replace_preview.to}</code>.
+              </p>
+              <p class="mt-1 text-[0.65rem] text-stone-600">
+                An exact snapshot will be saved before the update.
+              </p>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-end gap-2 border-t border-amber-300/10 pt-3">
+            <button
+              id="database-text-swap-cancel"
+              type="button"
+              phx-click="cancel_database_text"
+              class="rounded-lg px-3 py-2 text-xs font-semibold text-stone-400 transition hover:bg-white/5 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              id="database-text-swap-confirm"
+              type="button"
+              phx-click="confirm_database_text"
+              phx-disable-with="Replacing…"
+              disabled={@replace_preview.affected_rows == 0}
+              class="inline-flex items-center gap-2 rounded-lg bg-amber-200 px-3 py-2 text-xs font-semibold text-amber-950 transition hover:bg-amber-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-35 phx-click-loading:cursor-wait"
+            >
+              <.icon name="hero-arrow-path" class="size-3.5" /> Confirm replacement
+            </button>
+          </div>
+        </div>
+      </details>
+
+      <div
+        :if={@replace_undo}
+        id="database-text-swap-undo"
+        class="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-300/15 bg-emerald-300/[0.05] px-3 py-2.5"
+      >
+        <div class="flex min-w-0 items-center gap-2.5">
+          <span class="grid size-7 shrink-0 place-items-center rounded-lg bg-emerald-300/[0.08] text-emerald-200">
+            <.icon name="hero-shield-check" class="size-3.5" />
+          </span>
+          <p class="truncate text-xs text-stone-400">
+            Last replacement changed <span class="font-semibold text-stone-200">{row_count_label(@replace_undo.affected_rows)}</span>.
+          </p>
+        </div>
+        <button
+          id="database-text-swap-undo-button"
+          type="button"
+          phx-click="undo_database_text"
+          phx-disable-with="Restoring…"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300/15 bg-emerald-300/[0.07] px-3 py-1.5 text-xs font-semibold text-emerald-100 transition hover:bg-emerald-300/10 phx-click-loading:cursor-wait"
+        >
+          <.icon name="hero-arrow-uturn-left" class="size-3.5" /> Undo
+        </button>
+      </div>
+
+      <% visible_chats = filter_chats(@chats, @chat_query) %>
+      <div class="mt-4 grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)]">
+        <aside class="-mx-3 min-w-0 border-y border-white/[0.06] bg-black/10 px-3 py-3 lg:sticky lg:top-16 lg:mx-0 lg:self-start lg:border-0 lg:bg-transparent lg:px-0 lg:py-0">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white">Conversations</h2>
+            <span class="text-xs tabular-nums text-stone-600">
+              <%= if @chat_query == "" do %>
+                {length(@chats)}
+              <% else %>
+                {length(visible_chats)}/{length(@chats)}
+              <% end %>
+            </span>
+          </div>
+          <.form
+            for={@chat_filter_form}
+            id="conversation-filter-form"
+            phx-change="filter_conversations"
+            class="relative mt-2"
+          >
+            <.icon
+              name="hero-magnifying-glass"
+              class="pointer-events-none absolute left-2.5 top-2.5 z-10 size-3.5 text-stone-600"
+            />
+            <.input
+              field={@chat_filter_form[:query]}
+              id="conversation-filter"
+              type="search"
+              placeholder="Find chat or ID"
+              autocomplete="off"
+              phx-debounce="150"
+              class="w-full rounded-lg border border-white/[0.08] bg-black/15 py-2 pl-8 pr-3 text-xs text-stone-200 outline-none transition placeholder:text-stone-700 hover:border-white/15 focus:border-emerald-300/25 focus:ring-2 focus:ring-emerald-300/[0.07]"
+            />
+          </.form>
+          <nav
+            id="conversation-list"
+            aria-label="Choose conversation"
+            class="mt-2 flex max-w-full gap-1.5 overflow-x-auto pb-1 pr-1 lg:block lg:max-h-[calc(100vh-9rem)] lg:space-y-1 lg:overflow-y-auto lg:pb-0"
+          >
+            <.link
+              id="all-conversations"
+              navigate={~p"/"}
+              aria-current={is_nil(@selected_chat_id) && "page"}
+              class={[
+                "flex shrink-0 items-center justify-between rounded-lg px-3 py-2 text-sm transition phx-click-loading:pointer-events-none phx-click-loading:opacity-50 lg:w-full",
+                is_nil(@selected_chat_id) && "bg-white/10 text-white",
+                not is_nil(@selected_chat_id) &&
+                  "text-stone-500 hover:bg-white/5 hover:text-stone-300"
+              ]}
+            >
+              <span>All chats</span>
+            </.link>
+            <.link
+              :for={chat <- visible_chats}
+              id={"chat-#{chat.chat_id}"}
+              navigate={~p"/chats/#{chat.chat_id}"}
+              aria-current={@selected_chat_id == chat.chat_id && "page"}
+              class={[
+                "flex shrink-0 items-center justify-between rounded-lg px-3 py-2 text-sm transition phx-click-loading:pointer-events-none phx-click-loading:opacity-50 lg:w-full",
+                @selected_chat_id == chat.chat_id && "bg-emerald-400/10 text-emerald-200",
+                @selected_chat_id != chat.chat_id &&
+                  "text-stone-500 hover:bg-white/5 hover:text-stone-300"
+              ]}
+            >
+              <span class="min-w-0 truncate text-left">
+                <span :if={chat.chat_name} class="font-medium">{chat.chat_name}</span>
+                <span :if={chat.chat_name} class="mx-1 text-stone-700">/</span>
+                <span class="font-mono text-[0.7rem] opacity-70">chat:{chat.chat_id}</span>
+              </span>
+              <span class="ml-2 rounded-full bg-white/5 px-2 py-0.5 text-xs text-stone-600">
+                {chat.exchange_count}
+              </span>
+            </.link>
+            <p
+              :if={visible_chats == [] && @chat_query != ""}
+              id="conversation-filter-empty"
+              class="px-3 py-2 text-xs text-stone-600"
+            >
+              No matching chat
+            </p>
+          </nav>
+        </aside>
+
+        <div>
+          <div class="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-3">
+            <div>
+              <h2 id="conversation-heading" class="text-lg font-semibold text-white">
+                <%= if @selected_chat_id do %>
+                  <%= if Map.get(@chat_names, @selected_chat_id) do %>
+                    <span id="conversation-chat-name">
+                      {Map.get(@chat_names, @selected_chat_id)}
+                    </span>
+                    <span class="ml-2 font-mono text-xs font-normal text-stone-500">
+                      chat:{@selected_chat_id}
+                    </span>
+                  <% else %>
+                    Chat {@selected_chat_id}
+                  <% end %>
+                <% else %>
+                  Recent traffic
+                <% end %>
+              </h2>
+              <p class="mt-0.5 text-xs text-stone-500">Newest activity appears first.</p>
+            </div>
+            <div
+              :if={@selected_chat_id}
+              class="flex items-center gap-1 rounded-lg border border-white/[0.08] bg-white/[0.025] p-1"
+            >
+              <.link
+                id="chat-transcript-link"
+                navigate={~p"/chats/#{@selected_chat_id}/transcript"}
+                class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-stone-300 transition hover:bg-white/[0.07] hover:text-white"
+              >
+                <.icon name="hero-chat-bubble-left-right" class="size-3.5" /> Transcript
+              </.link>
+              <span class="h-4 w-px bg-white/[0.08]"></span>
+              <.link
+                id="chat-sticker-bank-link"
+                navigate={~p"/chats/#{@selected_chat_id}/stickers"}
+                class="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-cyan-100 transition hover:bg-cyan-300/[0.08]"
+              >
+                <.icon name="hero-sparkles" class="size-3.5" /> Stickers
+              </.link>
+            </div>
+          </div>
+
+          <section
+            :if={@selected_chat_id}
+            id="ai-context"
+            class="mt-3 rounded-xl border border-white/10 bg-black/10 p-4"
+          >
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 class="font-semibold text-white">AI context</h3>
+                <p class="mt-1 text-xs leading-5 text-stone-500">
+                  The system prompt and last {@context_window} completed exchanges. The next incoming message is appended as the final user message.
+                </p>
+              </div>
+              <span class="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-stone-500">
+                {length(@context_preview)} messages
+              </span>
+            </div>
+
+            <.form
+              for={@system_prompt_form}
+              id="system-prompt-form"
+              phx-change="validate_system_prompt"
+              phx-submit="save_system_prompt"
+              class="mt-4 rounded-xl border border-violet-300/15 bg-violet-300/[0.04] p-3"
+            >
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <label
+                    for="system-prompt-input"
+                    class="text-xs font-semibold uppercase tracking-wider text-violet-200"
+                  >
+                    System prompt
+                  </label>
+                  <p id="system-prompt-help" class="mt-1 text-xs leading-5 text-stone-500">
+                    Runtime placeholders: <code phx-no-curly-interpolation class="text-stone-300">{{bot_name}}</code>, <code
+                      phx-no-curly-interpolation
+                      class="text-stone-300"
+                    >{{current_datetime}}</code>,
+                    and <code phx-no-curly-interpolation class="text-stone-300">{{timezone}}</code>.
+                  </p>
+                </div>
+                <button
+                  id="system-prompt-reset"
+                  type="button"
+                  phx-click="reset_system_prompt"
+                  data-confirm="Restore the default system prompt for this chat?"
+                  class="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-2.5 py-1.5 text-xs font-medium text-stone-400 transition hover:border-violet-300/20 hover:bg-violet-300/[0.07] hover:text-violet-100"
+                >
+                  <.icon name="hero-arrow-path" class="size-3.5" /> Reset default
+                </button>
+              </div>
+
+              <.input
+                field={@system_prompt_form[:prompt]}
+                id="system-prompt-input"
+                type="textarea"
+                rows="12"
+                maxlength="20000"
+                aria-describedby="system-prompt-help system-prompt-error"
+                phx-debounce="250"
+                class="mt-3 min-h-56 w-full resize-y rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 font-mono text-xs leading-5 text-stone-200 outline-none transition placeholder:text-stone-700 hover:border-white/20 focus:border-violet-300/30 focus:ring-2 focus:ring-violet-300/[0.08]"
+              />
+              <p
+                :if={@system_prompt_error}
+                id="system-prompt-error"
+                class="mt-2 text-xs font-medium text-rose-300"
+              >
+                {@system_prompt_error}
+              </p>
+              <div class="mt-3 flex justify-end gap-2">
+                <button
+                  id="system-prompt-cancel"
+                  type="button"
+                  phx-click="cancel_system_prompt"
+                  class="rounded-lg px-3 py-2 text-xs font-semibold text-stone-400 transition hover:bg-white/5 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  id="system-prompt-save"
+                  type="submit"
+                  phx-disable-with="Saving…"
+                  disabled={!is_nil(@system_prompt_error)}
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-violet-200 px-3 py-2 text-xs font-semibold text-violet-950 transition hover:bg-violet-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40 phx-submit-loading:cursor-wait"
+                >
+                  <.icon name="hero-check" class="size-3.5" /> Save prompt
+                </button>
+              </div>
+            </.form>
+
+            <div id="context-messages" class="mt-4 max-h-96 space-y-2 overflow-y-auto pr-1">
+              <div
+                :for={{message, index} <- Enum.with_index(@context_preview)}
+                id={"context-message-#{index}"}
+                class="rounded-xl border border-white/[0.06] bg-white/[0.025] p-3"
+              >
+                <span class={[
+                  "inline-flex rounded-full border px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider",
+                  role_classes(message.role)
+                ]}>
+                  {role_label(message.role)}
+                </span>
+                <p class="mt-2 whitespace-pre-line break-words text-sm leading-6 text-stone-300">
+                  {message.content}
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div id="exchanges" phx-update="stream" class="mt-3 space-y-2">
+            <div
+              id="exchanges-empty"
+              class="hidden only:grid min-h-48 place-items-center rounded-xl border border-dashed border-white/10 bg-white/[0.02] p-5 text-center"
+            >
+              <div>
+                <div class="mx-auto grid size-12 place-items-center rounded-2xl bg-white/5">
+                  <.icon name="hero-chat-bubble-left-right" class="size-6 text-stone-500" />
+                </div>
+                <p class="mt-4 font-medium text-stone-300">Waiting for the first message</p>
+                <p class="mt-2 text-sm text-stone-600">
+                  Telegram requests will surface here automatically.
+                </p>
+              </div>
+            </div>
+
+            <article
+              :for={{id, exchange} <- @streams.exchanges}
+              id={id}
+              class="group rounded-xl border border-white/10 bg-[#0b1714]/90 p-3 shadow-2xl shadow-black/10 transition duration-300 hover:-translate-y-0.5 hover:border-white/20 sm:p-4"
+            >
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2 text-xs text-stone-500">
+                  <span
+                    :if={Map.get(@chat_names, exchange.chat_id)}
+                    id={"exchange-#{exchange.id}-chat-name"}
+                    class="max-w-48 truncate font-medium text-stone-300"
+                  >
+                    {Map.get(@chat_names, exchange.chat_id)}
+                  </span>
+                  <span
+                    :if={Map.get(@chat_names, exchange.chat_id)}
+                    class="size-1 rounded-full bg-stone-700"
+                  ></span>
+                  <span class="font-mono text-stone-400">chat:{exchange.chat_id || "unknown"}</span>
+                  <span class="size-1 rounded-full bg-stone-700"></span>
+                  <time>{format_time(exchange.inserted_at)}</time>
+                </div>
+                <span class={[
+                  "rounded-full border px-2 py-0.5 text-xs font-medium",
+                  status_classes(exchange.status)
+                ]}>
+                  {status_label(exchange.status)}
+                </span>
+              </div>
+
+              <div class="mt-3 grid gap-3 lg:grid-cols-2">
+                <section>
+                  <div class="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                    <p class="text-xs font-medium uppercase tracking-widest text-stone-600">
+                      Request
+                    </p>
+                    <div
+                      id={"exchange-#{exchange.id}-sender"}
+                      class="flex items-center gap-1.5 text-xs text-cyan-200/80"
+                    >
+                      <span class="grid size-5 place-items-center rounded-full bg-cyan-400/10">
+                        <.icon name="hero-user" class="size-3" />
+                      </span>
+                      <span>{sender_name(exchange)}</span>
+                      <span :if={exchange.sender_username} class="text-stone-500">
+                        @{exchange.sender_username}
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    :if={sticker_request?(exchange)}
+                    class="inline-flex max-w-full flex-col items-start gap-2 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.07] px-3 py-2 text-sm font-semibold text-cyan-100"
+                  >
+                    <img
+                      :if={sticker_media(exchange) && sticker_media(exchange).type == :image}
+                      id={"exchange-#{exchange.id}-sticker"}
+                      src={sticker_media(exchange).src}
+                      loading="lazy"
+                      alt={request_text(exchange)}
+                      class="max-h-40 w-auto rounded-lg object-contain"
+                    />
+                    <video
+                      :if={sticker_media(exchange) && sticker_media(exchange).type == :video}
+                      id={"exchange-#{exchange.id}-sticker"}
+                      preload="none"
+                      autoplay
+                      loop
+                      muted
+                      playsinline
+                      class="max-h-40 w-auto rounded-lg object-contain"
+                    >
+                      <source src={sticker_media(exchange).src} type="video/webm" />
+                    </video>
+                    <span class="inline-flex items-center gap-2">
+                      <.icon name="hero-sparkles" class="size-4" />
+                      <span>{request_text(exchange)}</span>
+                    </span>
+                    <span
+                      :if={
+                        sticker_media(exchange) &&
+                          sticker_media(exchange).type == :unsupported_animation
+                      }
+                      id={"exchange-#{exchange.id}-animated-sticker-note"}
+                      class="text-xs font-medium text-cyan-100/70"
+                    >
+                      animated sticker
+                    </span>
+                    <span
+                      :if={sticker_id(exchange)}
+                      id={"exchange-#{exchange.id}-sticker-id"}
+                      class="max-w-full truncate text-[0.65rem] font-normal text-cyan-100/60"
+                    >
+                      <span class="font-semibold uppercase tracking-widest text-cyan-100/45">
+                        Sticker ID
+                      </span>
+                      <span class="font-mono">{sticker_id(exchange)}</span>
+                    </span>
+                  </div>
+                  <p
+                    :if={!sticker_request?(exchange)}
+                    id={"exchange-#{exchange.id}-request"}
+                    class="whitespace-pre-line break-words text-sm leading-5 text-stone-200"
+                  >
+                    {request_text(exchange)}
+                  </p>
+                </section>
+                <section
+                  :if={exchange.status != "observed"}
+                  class="rounded-lg border border-white/[0.06] bg-black/10 p-2.5"
+                >
+                  <p class="mb-1.5 text-xs font-medium uppercase tracking-widest text-emerald-400/60">
+                    Response
+                  </p>
+                  <p
+                    id={"exchange-#{exchange.id}-response"}
+                    class="whitespace-pre-line break-words text-sm leading-5 text-stone-300"
+                  >
+                    <%= cond do %>
+                      <% exchange.response_text -> %>
+                        {exchange.response_text}
+                      <% exchange.status == "no_answer" -> %>
+                        Suppressed by the AI
+                      <% true -> %>
+                        Generating response…
+                    <% end %>
+                  </p>
+                </section>
+              </div>
+
+              <div
+                :if={exchange.error}
+                class="mt-3 rounded-lg border border-rose-400/15 bg-rose-400/[0.06] px-3 py-2 text-xs leading-5 text-rose-200/80"
+              >
+                {exchange.error}
+              </div>
+
+              <dl class="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 border-t border-white/[0.06] pt-2.5 text-xs">
+                <div class="flex gap-2">
+                  <dt class="text-stone-600">Model</dt><dd class="text-stone-400">
+                    {exchange.model || "—"}
+                  </dd>
+                </div>
+                <div class="flex gap-2">
+                  <dt class="text-stone-600">Latency</dt><dd class="text-stone-400">
+                    {format_latency(exchange.latency_ms)}
+                  </dd>
+                </div>
+                <div class="flex gap-2">
+                  <dt class="text-stone-600">Tokens</dt><dd class="text-stone-400">
+                    {format_tokens(exchange.total_tokens)}
+                  </dd>
+                </div>
+                <div class="flex gap-2">
+                  <dt class="text-stone-600">Request ID</dt><dd class="font-mono text-stone-500">
+                    {exchange.req_id}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layouts.app>
